@@ -7,12 +7,19 @@ module Twitter
 
     # @return [Hash]
     def self.errors
-      @errors ||= Hash[descendants.map{|klass| [klass.const_get(:HTTP_STATUS_CODE), klass]}]
-    end
-
-    # @return [Array]
-    def self.descendants
-      ObjectSpace.each_object(::Class).select{|klass| klass < self}
+      @errors ||= {
+        400 => Twitter::Error::BadRequest,
+        401 => Twitter::Error::Unauthorized,
+        403 => Twitter::Error::Forbidden,
+        404 => Twitter::Error::NotFound,
+        406 => Twitter::Error::NotAcceptable,
+        422 => Twitter::Error::UnprocessableEntity,
+        429 => Twitter::Error::TooManyRequests,
+        500 => Twitter::Error::InternalServerError,
+        502 => Twitter::Error::BadGateway,
+        503 => Twitter::Error::ServiceUnavailable,
+        504 => Twitter::Error::GatewayTimeout,
+      }
     end
 
     # Initializes a new Error object
